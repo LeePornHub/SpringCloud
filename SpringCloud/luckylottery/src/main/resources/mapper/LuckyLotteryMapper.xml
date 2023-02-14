@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.liyh.dao.LuckyLotteryDao">
+    <resultMap id="DlEmployee" type="com.liyh.bean.DlEmployee">
+        <result column="employee_id" property="employeeId" />
+        <result column="employee_name" property="employeeName" />
+        <result column="employee_type" property="employeeType" />
+        <result column="factory" property="factory" />
+        <result column="dept_id" property="deptId" />
+        <result column="dept_name" property="deptName" />
+        <result column="lenovo_hire_date" property="lenovoHireDate" />
+        <result column="tel" property="tel" />
+        <result column="dept_manager" property="deptManager" />
+        <result column="coast_center" property="coastCenter" />
+        <result column="dept_coordinator" property="deptCoordinator" />
+    </resultMap>
+
+    <resultMap id="LuckyLotteryInfo" type="com.liyh.bean.LuckyLotteryInfo">
+        <result column="employee_id" property="employeeId" />
+        <result column="employee_name" property="employeeName" />
+        <result column="lucky_lottery_code" property="luckyLotteryCode" />
+        <result column="lucky_lottery_name" property="luckyLotteryName" />
+        <result column="verification_status" property="verificationStatus" />
+        <result column="verification_date" property="verificationDate" />
+    </resultMap>
+
+    <resultMap id="LuckyLottery" type="com.liyh.bean.LuckyLottery">
+        <result column="lucky_lottery_code" property="luckyLotteryCode" />
+        <result column="lucky_lottery_name" property="luckyLotteryName" />
+        <result column="lucky_lottery_type" property="luckyLotteryType" />
+        <result column="lucky_lottery_count" property="luckyLotteryCount" />
+        <result column="lucky_lottery_capacity" property="luckyLotteryCapacity" />
+        <result column="lucky_lottery_total" property="luckyLotteryTotal" />
+    </resultMap>
+
+    <select id="login" resultMap="DlEmployee" >
+        select * from infosmart_db.lssc_dl_employee
+        <where>
+            and employee_id = #{dlEmployee.employeeId}
+            and employee_name = #{dlEmployee.employeeName}
+            and employee_id in (select employee_id from employee_lucky_lottery_info)
+        </where>
+    </select>
+
+    <select id="getAllEmployee" resultMap="DlEmployee" >
+        select * from infosmart_db.lssc_dl_employee
+        <where>
+            <if test="dlEmployee.employeeId != null and dlEmployee.employeeId != ''">
+                and employee_id = #{dlEmployee.employeeId}
+            </if>
+            <if test="dlEmployee.employeeName != null and dlEmployee.employeeName != ''">
+                and employee_name = #{dlEmployee.employeeName}
+            </if>
+            and employee_id not in (select employee_id from employee_lucky_lottery_info)
+        </where>
+    </select>
+
+    <select id="getEmployeeLuckyLotteryInfo" resultMap="LuckyLotteryInfo" >
+        select * from infosmart_db.employee_lucky_lottery_info
+        <where>
+            <if test="luckyLotteryInfo.employeeId != null and luckyLotteryInfo.employeeId != ''">
+                and employee_id = #{luckyLotteryInfo.employeeId}
+            </if>
+            <if test="luckyLotteryInfo.verificationStatus != null and luckyLotteryInfo.verificationStatus != ''">
+                and verification_status = #{luckyLotteryInfo.verificationStatus}
+            </if>
+            and is_delete = '0'
+        </where>
+    </select>
+
+    <select id="getDoneEmployeeLuckyLotteryInfo" resultMap="LuckyLotteryInfo" >
+        select * from infosmart_db.employee_lucky_lottery_info
+        <where>
+            <if test="luckyLotteryInfo.employeeId != null and luckyLotteryInfo.employeeId != ''">
+                and employee_id = #{luckyLotteryInfo.employeeId}
+            </if>
+            <if test="luckyLotteryInfo.verificationStatus != null and luckyLotteryInfo.verificationStatus != ''">
+                and verification_status = #{luckyLotteryInfo.verificationStatus}
+            </if>
+            and is_delete = '0'
+        </where>
+        order by verification_date desc
+    </select>
+
+    <select id="getLuckyLotteryInfo" resultMap="LuckyLottery" >
+        select * from infosmart_db.lucky_lottery_info where lucky_lottery_date = DATE_FORMAT(NOW(), '%Y-%m-%d') order by lucky_lottery_code + 0 asc;
+    </select>
+
+    <insert id="saveEmployeeLuckyLotteryInfo">
+        insert into employee_lucky_lottery_info(lucky_lottery_code, lucky_lottery_name, employee_id, employee_name, verification_status, is_delete, create_date)
+        values
+        <foreach collection = "luckyLotteryInfos" item = "item" separator = ",">
+            (#{item.luckyLotteryCode}, #{item.luckyLotteryName}, SUBSTRING_INDEX(#{item.employeeId}, '_', -1), SUBSTRING_INDEX(#{item.employeeId}, '_', 1), 'alive', '0', NOW())
+        </foreach>
+    </insert>
+
+    <update id="isDeleteLuckyLotteryInfo">
+        update employee_lucky_lottery_info set is_delete = '1' where
+        lucky_lottery_code in (
+        <foreach collection = "luckyLotteryCodes" item = "item" separator = ",">
+             #{item}
+        </foreach>
+        )
+    </update>
+
+    <update id="verificationLuckyLotteryInfo">
+        update employee_lucky_lottery_info set verification_status = 'done', verification_date = NOW() where
+        is_delete = '0'
+        and employee_id = #{luckyLotteryInfo.employeeId}
+        and lucky_lottery_code = #{luckyLotteryInfo.luckyLotteryCode}
+    </update>
+
+    <delete id="clearLuckyLotteryInfo">
+        delete from employee_lucky_lottery_info where DATE_FORMAT(create_date, '%Y-%m-%d') = DATE_FORMAT(NOW(), '%Y-%m-%d')
+    </delete>
+
+    <select id="getNextLuckyLotteryCode" resultType="java.lang.String">
+        SELECT CASE
+        WHEN (select lucky_lottery_code from employee_lucky_lottery_info where is_delete = '0' and DATE_FORMAT(create_date, '%Y-%m-%d') = DATE_FORMAT(NOW(), '%Y-%m-%d') order by lucky_lottery_code + 0 desc limit 1) IS NULL
+        THEN 0
+        ELSE (
+        select
+        case
+        when (select lucky_lottery_code + 1 from lucky_lottery_info lli where lucky_lottery_date = DATE_FORMAT(NOW(), '%Y-%m-%d') order by lucky_lottery_code + 0 desc limit 1)
+        > (select (lucky_lottery_code + 1) lucky_lottery_code from employee_lucky_lottery_info where is_delete = '0' and DATE_FORMAT(create_date, '%Y-%m-%d') = DATE_FORMAT(NOW(), '%Y-%m-%d') order by lucky_lottery_code + 0 desc limit 1)
+        then  (select (lucky_lottery_code + 1) lucky_lottery_code from employee_lucky_lottery_info where is_delete = '0' and DATE_FORMAT(create_date, '%Y-%m-%d') = DATE_FORMAT(NOW(), '%Y-%m-%d') order by lucky_lottery_code + 0 desc limit 1)
+        else (select lucky_lottery_code + 1 from lucky_lottery_info lli where lucky_lottery_date = DATE_FORMAT(NOW(), '%Y-%m-%d') order by lucky_lottery_code + 0 desc limit 1)
+        end as lucky_lottery_code) END AS lucky_lottery_code from dual
+    </select>
+</mapper>

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="Encoding">
+    <file url="file://$PROJECT_DIR$/basedata/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/basedata/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/cloudConfig/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/cloudConfig/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/commons/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/commons/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/eureka01/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/eureka01/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/eureka02/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/eureka02/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/luckylottery/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/luckylottery/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/luckylottery02/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/luckylottery02/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/springGateWay/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/springGateWay/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/src/main/resources" charset="UTF-8" />
+  </component>
+</project>

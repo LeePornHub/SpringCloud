@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CompilerConfiguration">
+    <annotationProcessing>
+      <profile default="true" name="Default" enabled="true" />
+      <profile name="Maven default annotation processors profile" enabled="true">
+        <sourceOutputDir name="target/generated-sources/annotations" />
+        <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
+        <outputRelativeToContentRoot value="true" />
+        <module name="basedata" />
+        <module name="cloudConfig" />
+        <module name="eureka02" />
+        <module name="eureka01" />
+        <module name="springGateWay" />
+        <module name="luckylottery01" />
+        <module name="commons" />
+      </profile>
+    </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="eureka" target="11" />
+      <module name="luckylottery" target="11" />
+      <module name="luckylottery (1)" target="11" />
+      <module name="luckylottery (2)" target="11" />
+      <module name="luckylottery02" target="11" />
+    </bytecodeTargetLevel>
+  </component>
+</project>
